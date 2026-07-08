@@ -32,8 +32,13 @@ scaffolded ad hoc later.
    install `viem`, `@prisma/client`, `ioredis`.
 8. Scaffold `apps/frontend`: `create-next-app` (TypeScript, App Router),
    install `wagmi`, `viem`, `@rainbow-me/rainbowkit`, `@tanstack/react-query`.
-9. Write `infrastructure/docker-compose.yml`: Postgres, Redis, and a
-   Hardhat local node service for local dev.
+9. Write `infrastructure/docker-compose.yml`: Postgres 18 + Redis for local
+   dev. **Deviation from the original plan**: a Hardhat local node is not
+   containerized — it's a pure-JS dev tool with no system dependency,
+   already available in the workspace via `pnpm --filter @we3/contracts run
+   node`, so containerizing it would only add volume-mount/`node_modules`
+   platform-mismatch complexity for no benefit. Run it alongside the
+   Postgres/Redis stack with that command.
 10. Write `.github/workflows/ci.yml`: lint + typecheck + test skeleton
     (jobs will gain real content as later milestones add tests).
 11. Root `README.md` updated with local dev setup instructions

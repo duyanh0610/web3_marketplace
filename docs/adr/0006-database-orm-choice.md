@@ -48,3 +48,9 @@ PostgreSQL experience from prior NestJS work.
   versions against the same migrated schema — a version-skew risk noted
   explicitly for the deploy runbook (see
   [DevOps & CI/CD §4](../11-devops-cicd.md)).
+- **PostgreSQL version: 18** (current stable major as of this project's
+  Milestone 0), pinned via the `postgres:18` Docker image in
+  `infrastructure/docker-compose.yml` for local dev, and matched to
+  whatever major version Railway's managed Postgres offers for
+  staging/production (see [ADR-0011](./0011-hosting-railway-vercel.md)) —
+  keep local and hosted versions aligned to avoid a dev/prod behavior gap.

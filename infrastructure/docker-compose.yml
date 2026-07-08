@@ -1,0 +1,53 @@
+name: we3-marketplace
+
+# Local development infrastructure: PostgreSQL + Redis.
+#
+# The Sepolia-facing services (contracts, backend, indexer, frontend) run
+# natively via pnpm — not containerized here. A local Hardhat node is a
+# pure-JS dev tool with no system dependency, already installed in the
+# workspace; run it alongside this stack with:
+#
+#   pnpm --filter @we3/contracts run node
+#
+# See docs/milestones/milestone-00-foundations.md.
+
+services:
+  postgres:
+    image: postgres:18
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: we3_marketplace
+    ports:
+      - "5432:5432"
+    volumes:
+      # Postgres 18+ images store data under a version-specific subdirectory
+      # of /var/lib/postgresql itself (not /var/lib/postgresql/data) — see
+      # https://github.com/docker-library/postgres/pull/1259.
+      - postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      # Host port 6380 (not the default 6379) — this dev machine already has
+      # an unrelated Redis container from another project bound to 6379.
+      # Change back to "6379:6379" if that's not the case on your machine.
+      - "6380:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  postgres_data:
+  redis_data:

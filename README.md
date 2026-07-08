@@ -26,13 +26,59 @@ we3_marketplace/
 
 ## Status
 
-Documentation phase complete. Implementation proceeds one milestone at a
-time — see [Milestone Roadmap](docs/15-milestone-roadmap.md) and
-[docs/milestones/](docs/milestones/) for the current plan, starting at
-[Milestone 0 — Foundations & Tooling](docs/milestones/milestone-00-foundations.md).
+[Milestone 0 — Foundations & Tooling](docs/milestones/milestone-00-foundations.md)
+complete: monorepo tooling, all four apps scaffolded, local infra, and CI
+are wired up and verified. Implementation proceeds one milestone at a time
+— see [Milestone Roadmap](docs/15-milestone-roadmap.md) and
+[docs/milestones/](docs/milestones/) for the current plan. Next up:
+[Milestone 1 — Wallet Authentication](docs/milestones/milestone-01-wallet-authentication.md).
 
 ## Local Development
 
-Local dev setup (Docker Compose, pnpm/Turborepo commands) will be
-documented here once [Milestone 0](docs/milestones/milestone-00-foundations.md)
-is implemented.
+### Prerequisites
+
+- Node.js `20.15.1` (see `.nvmrc`; `nvm use` if you have nvm installed)
+- pnpm via Corepack: `corepack enable && corepack prepare pnpm@9.15.0 --activate`
+- Docker (for local Postgres/Redis)
+
+### Setup
+
+```bash
+pnpm install
+
+# Start Postgres + Redis
+docker compose -f infrastructure/docker-compose.yml up -d
+
+# Copy env files (each app has its own .env.example)
+cp apps/backend/.env.example apps/backend/.env
+cp apps/indexer/.env.example apps/indexer/.env
+cp apps/frontend/.env.example apps/frontend/.env.local
+cp apps/contracts/.env.example apps/contracts/.env
+```
+
+> Redis is mapped to host port `6380` (not `6379`) by default — see the
+> comment in `infrastructure/docker-compose.yml`. Adjust `REDIS_URL` in
+> your `.env` files if you change that mapping.
+>
+> The frontend requires a real WalletConnect Cloud project ID
+> (`NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID`, free at
+> [cloud.walletconnect.com](https://cloud.walletconnect.com)) for wallet
+> connect to actually work — a placeholder value only unblocks the build.
+
+### Common commands (run from repo root, via Turborepo)
+
+```bash
+pnpm build       # build all apps/packages
+pnpm lint        # lint all apps/packages
+pnpm typecheck   # typecheck all apps/packages
+pnpm test        # test all apps/packages
+```
+
+### Running an individual app
+
+```bash
+pnpm --filter @we3/contracts run node   # local Hardhat node (localhost:8545)
+pnpm --filter @we3/backend run start:dev
+pnpm --filter @we3/indexer run dev
+pnpm --filter @we3/frontend run dev     # http://localhost:3000
+```
