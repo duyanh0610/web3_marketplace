@@ -47,3 +47,12 @@ test-results/
 
 # Misc
 *.tsbuildinfo
+
+# Claude Code plugin/tooling files (not part of this project)
+.claude/
+.claude-plugin/
+CLAUDE.md
+Claude_Project_Prompt.md
+EXAMPLES.md
+KARPATHY_GUIDE.md
+skills/
