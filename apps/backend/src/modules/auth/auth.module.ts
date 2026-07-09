@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { JwtModule } from "@nestjs/jwt";
+import { ThrottlerModule } from "@nestjs/throttler";
 import { RequestNonceUseCase } from "@app/modules/auth/application/request-nonce.use-case";
 import { VerifySiweUseCase } from "@app/modules/auth/application/verify-siwe.use-case";
 import { ACCOUNT_REPOSITORY } from "@app/modules/auth/application/ports/account-repository.port";
@@ -25,8 +26,13 @@ const jwtModule = JwtModule.registerAsync({
   }),
 });
 
+// 5 requests per 60s per client IP — blunts basic nonce/verify spam without
+// needing Redis-backed shared state (single backend instance in Phase 1,
+// see docs/11-devops-cicd.md). See docs/09-security-model.md §4.
+const throttlerModule = ThrottlerModule.forRoot([{ ttl: 60_000, limit: 5 }]);
+
 @Module({
-  imports: [jwtModule],
+  imports: [jwtModule, throttlerModule],
   controllers: [AuthController],
   providers: [
     RequestNonceUseCase,

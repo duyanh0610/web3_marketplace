@@ -1,9 +1,14 @@
-import { Body, Controller, Post } from "@nestjs/common";
+import { Body, Controller, Post, UseGuards } from "@nestjs/common";
+import { ThrottlerGuard } from "@nestjs/throttler";
 import { RequestNonceUseCase } from "@app/modules/auth/application/request-nonce.use-case";
 import { VerifySiweUseCase } from "@app/modules/auth/application/verify-siwe.use-case";
 import { RequestNonceDto } from "@app/modules/auth/presentation/dto/request-nonce.dto";
 import { VerifySiweDto } from "@app/modules/auth/presentation/dto/verify-siwe.dto";
 
+// Rate-limited (see AuthModule's ThrottlerModule.forRoot) — SIWE nonce
+// issuance/verification are exactly the endpoints most attractive to spam
+// (each nonce request creates an Account row) per docs/09-security-model.md §4.
+@UseGuards(ThrottlerGuard)
 @Controller("auth/siwe")
 export class AuthController {
   constructor(
