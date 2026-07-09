@@ -7,4 +7,29 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Models added starting Milestone 1 (ACCOUNT, SIWE_SESSION) — see docs/07-database-design.md
+// See docs/07-database-design.md §3 for the full ER diagram (only ACCOUNT
+// and SIWE_SESSION exist so far — the rest land in later milestones).
+
+model Account {
+  id          String   @id @default(uuid())
+  address     String   @unique
+  firstSeenAt DateTime @default(now())
+
+  siweSessions SiweSession[]
+
+  @@map("accounts")
+}
+
+model SiweSession {
+  id        String   @id @default(uuid())
+  accountId String
+  account   Account  @relation(fields: [accountId], references: [id])
+  address   String
+  nonce     String   @unique
+  used      Boolean  @default(false)
+  issuedAt  DateTime @default(now())
+  expiresAt DateTime
+
+  @@index([nonce])
+  @@map("siwe_sessions")
+}

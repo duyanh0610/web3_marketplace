@@ -43,6 +43,36 @@ repository ports (an in-memory `Map`-backed implementation of
 `ListingRepository`) — faster, and avoids tests that just re-assert mock
 call arguments instead of behavior.
 
+### 3.1 Coverage Enforcement
+
+`apps/backend/package.json`'s `jest.coverageThreshold` enforces minimum
+coverage on every `pnpm test` run (locally and in CI — see
+[DevOps & CI/CD §3](./11-devops-cicd.md)), with **per-layer thresholds**,
+not one blanket number:
+
+- `./src/modules/*/domain/` and `.../application/`: held to 95–100% —
+  this is exactly the pure logic layer unit tests are meant to cover (see
+  §1's "test at the level where a bug is cheapest to catch"), so anything
+  less here is a real gap, not an acceptable trade-off.
+- `global`: a low floor (single digits) covering everything else
+  (infrastructure, presentation, `main.ts`/`app.module.ts`) — these layers
+  are meant to be covered by **integration/e2e tests** (Prisma-against-real-
+  Postgres, resolver e2e), not unit tests, so a strict unit-test threshold
+  there would be enforcing the wrong tool for the job.
+
+**Jest-specific gotcha worth knowing**: once any path-specific threshold
+key exists, `global` no longer means "all files" — it means "all files not
+matched by a more specific key." Adding a new per-layer threshold shrinks
+what `global` measures and can drop its reported percentage sharply even
+though nothing regressed. Recompute `global`'s actual current value
+(`jest --coverage`, read the "All files" row *excluding* whatever's newly
+carved out) before changing these numbers, rather than guessing.
+
+As later milestones add integration/e2e coverage for infrastructure and
+presentation code, ratchet `global` up to match — it should track real
+achieved coverage plus a small buffer, never an aspirational number that
+fails immediately.
+
 ## 4. Indexer (`apps/indexer`)
 
 - Unit tests for event decoding and projection-mapping logic (pure

@@ -19,3 +19,4 @@ the initial documentation pass (2026-07-08) unless noted.
 | [0010](./0010-nft-metadata-storage-ipfs.md) | NFT Metadata Storage | IPFS via Pinata |
 | [0011](./0011-hosting-railway-vercel.md) | Hosting | Railway (backend/indexer/DB/Redis) + Vercel (frontend) |
 | [0012](./0012-phase2-scope-deferral.md) | Phase 2 Scope Deferral | DAO/Membership/ERC-20/Embedded Wallet/Admin/Explorer/Notifications deferred to Phase 2 |
+| [0013](./0013-frontend-i18n.md) | Frontend Internationalization | Custom React Context + JSON dictionaries, no URL locale routing, English default |

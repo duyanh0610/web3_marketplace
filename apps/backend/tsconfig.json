@@ -12,6 +12,11 @@
     "outDir": "./dist",
     "incremental": true,
     "strictNullChecks": true,
-    "noFallthroughCasesInSwitch": true
-  }
+    "noFallthroughCasesInSwitch": true,
+    "baseUrl": ".",
+    "paths": {
+      "@app/*": ["src/*"]
+    }
+  },
+  "include": ["src", "test"]
 }

@@ -39,7 +39,8 @@ src/
 ├── shared/
 │   ├── ui/                   # Design-system-agnostic primitives (Button, Card...)
 │   ├── graphql/               # Generated types + hooks (codegen)
-│   └── web3/                  # wagmi config, chain config, contract ABIs/addresses
+│   ├── web3/                  # wagmi config, chain config, contract ABIs/addresses
+│   └── i18n/                  # Locale context, en.json/vi.json dictionaries — see ADR-0013
 └── middleware.ts              # Attaches session cookie/JWT to requests
 ```
 

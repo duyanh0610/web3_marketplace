@@ -33,5 +33,18 @@ jobs:
       - name: Build
         run: pnpm build
 
-      - name: Test
+      # Runs each app's own "test" script via turbo. apps/backend's script
+      # includes `--coverage`, so this also enforces the per-layer
+      # coverageThreshold in apps/backend/package.json (see
+      # docs/10-testing-strategy.md §3.1) — a coverage regression fails
+      # this step, not just a failing test.
+      - name: Test (incl. coverage thresholds)
         run: pnpm test
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-reports
+          path: apps/*/coverage
+          retention-days: 14
