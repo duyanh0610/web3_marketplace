@@ -31,6 +31,16 @@ jobs:
         run: pnpm typecheck
 
       - name: Build
+        env:
+          # RainbowKit requires a non-empty projectId even to statically
+          # generate pages (see docs/adr — Milestone 0 finding); .env.local
+          # is gitignored and never reaches CI, so this must be injected
+          # here. Not a secret — NEXT_PUBLIC_* vars are bundled into the
+          # client JS regardless of where they're set. Using a real
+          # project ID here (as a repo variable, not hardcoded) would also
+          # make WalletConnect actually functional in this build, but
+          # isn't required just to unblock compilation.
+          NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID: ${{ vars.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || '00000000000000000000000000000000' }}
         run: pnpm build
 
       # Runs each app's own "test" script via turbo. apps/backend's script
