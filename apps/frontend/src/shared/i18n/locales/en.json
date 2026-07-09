@@ -1,0 +1,25 @@
+{
+  "home": {
+    "title": "Web3 NFT Marketplace",
+    "subtitle": "Frontend scaffold — wallet connect wired via RainbowKit + wagmi."
+  },
+  "auth": {
+    "signIn": "Sign in with Ethereum",
+    "signingIn": "Signing in…",
+    "signOut": "Sign out",
+    "signedInAs": "Signed in as {address}",
+    "connectWalletFirst": "Connect a wallet first",
+    "signInFailed": "Sign-in failed",
+    "meQueryLabel": "me query",
+    "loading": "loading…"
+  },
+  "common": {
+    "language": "Language"
+  },
+  "errors": {
+    "NONCE_EXPIRED": "Your sign-in request expired. Please try again.",
+    "NONCE_ALREADY_USED": "This sign-in request was already used. Please try again.",
+    "NONCE_NOT_FOUND": "Sign-in request not found. Please try again.",
+    "INVALID_SIGNATURE": "Signature verification failed. Please try again."
+  }
+}

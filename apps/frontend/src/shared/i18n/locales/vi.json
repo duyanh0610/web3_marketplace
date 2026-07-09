@@ -1,0 +1,25 @@
+{
+  "home": {
+    "title": "Web3 NFT Marketplace",
+    "subtitle": "Frontend scaffold — kết nối ví qua RainbowKit + wagmi."
+  },
+  "auth": {
+    "signIn": "Đăng nhập bằng Ethereum",
+    "signingIn": "Đang đăng nhập…",
+    "signOut": "Đăng xuất",
+    "signedInAs": "Đã đăng nhập: {address}",
+    "connectWalletFirst": "Vui lòng kết nối ví trước",
+    "signInFailed": "Đăng nhập thất bại",
+    "meQueryLabel": "truy vấn me",
+    "loading": "đang tải…"
+  },
+  "common": {
+    "language": "Ngôn ngữ"
+  },
+  "errors": {
+    "NONCE_EXPIRED": "Yêu cầu đăng nhập đã hết hạn. Vui lòng thử lại.",
+    "NONCE_ALREADY_USED": "Yêu cầu đăng nhập này đã được sử dụng. Vui lòng thử lại.",
+    "NONCE_NOT_FOUND": "Không tìm thấy yêu cầu đăng nhập. Vui lòng thử lại.",
+    "INVALID_SIGNATURE": "Xác thực chữ ký thất bại. Vui lòng thử lại."
+  }
+}
