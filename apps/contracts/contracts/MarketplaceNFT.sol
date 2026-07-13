@@ -85,12 +85,18 @@ contract MarketplaceNFT is
         return super._update(to, tokenId, auth);
     }
 
+    /// @notice Returns the metadata URI for `tokenId`, as set at mint time.
+    /// @dev Required override — both ERC721Upgradeable and
+    /// ERC721URIStorageUpgradeable declare `tokenURI`.
     function tokenURI(
         uint256 tokenId
     ) public view override(ERC721Upgradeable, ERC721URIStorageUpgradeable) returns (string memory) {
         return super.tokenURI(tokenId);
     }
 
+    /// @notice ERC-165 interface detection, covering ERC721 and ERC2981.
+    /// @dev Required override — ERC721Upgradeable, ERC721URIStorageUpgradeable
+    /// and ERC2981Upgradeable each declare `supportsInterface`.
     function supportsInterface(
         bytes4 interfaceId
     ) public view override(ERC721Upgradeable, ERC721URIStorageUpgradeable, ERC2981Upgradeable) returns (bool) {
