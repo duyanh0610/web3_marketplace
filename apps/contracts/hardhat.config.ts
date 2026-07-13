@@ -14,6 +14,7 @@ const config: HardhatUserConfig = {
     version: "0.8.28",
     settings: {
       optimizer: { enabled: true, runs: 200 },
+      evmVersion: "cancun",
     },
   },
   networks: {
@@ -24,7 +25,7 @@ const config: HardhatUserConfig = {
     },
   },
   etherscan: {
-    apiKey: { sepolia: ETHERSCAN_API_KEY },
+    apiKey: ETHERSCAN_API_KEY,
   },
   paths: {
     sources: "./contracts",
