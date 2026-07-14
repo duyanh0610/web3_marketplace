@@ -4,6 +4,7 @@ import { DomainError } from "@app/shared/domain/domain-error";
 
 const STATUS_BY_CODE: Record<string, number> = {
   INVALID_SIGNATURE: HttpStatus.UNAUTHORIZED,
+  METADATA_PINNING_FAILED: HttpStatus.BAD_GATEWAY,
 };
 
 @Catch(DomainError)
