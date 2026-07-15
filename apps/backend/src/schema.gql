@@ -1,0 +1,143 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Account {
+  address: String!
+  firstSeenAt: DateTime!
+}
+
+type Collection {
+  contractAddress: String!
+  id: ID!
+  name: String!
+  symbol: String!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Listing {
+  createdAt: DateTime!
+  id: ID!
+  onchainListingId: String!
+  priceWei: Wei!
+  sale: Sale
+  seller: String!
+  status: ListingStatus!
+  token: Token!
+  updatedAt: DateTime!
+}
+
+type ListingConnection {
+  edges: [ListingEdge!]!
+  pageInfo: PageInfo!
+}
+
+type ListingEdge {
+  cursor: String!
+  node: Listing!
+}
+
+enum ListingStatus {
+  ACTIVE
+  CANCELLED
+  SOLD
+}
+
+type MetadataAttribute {
+  traitType: String!
+  value: String!
+}
+
+type Mutation {
+  requestMetadataUpload(contentType: String!, fileName: String!): UploadTarget!
+}
+
+type PageInfo {
+  endCursor: String
+  hasNextPage: Boolean!
+}
+
+type Query {
+  listings(after: String, first: Int! = 20, sellerAddress: String, status: ListingStatus! = ACTIVE): ListingConnection!
+  me: Account
+  status: String!
+  token(collectionAddress: String!, tokenId: String!): Token
+  tokensOwnedBy(address: String!, after: String, first: Int! = 20): TokenConnection!
+}
+
+type Sale {
+  buyer: String!
+  feePaidWei: Wei!
+  id: ID!
+  priceWei: Wei!
+  royaltyPaidWei: Wei!
+  settledAt: DateTime!
+  txHash: String!
+}
+
+type Subscription {
+  listingUpdated(listingId: ID): Listing!
+  tokenTransferred(collectionAddress: String!, tokenId: String!): Transfer!
+}
+
+type Token {
+  activeListing: Listing
+  collection: Collection!
+  id: ID!
+  metadata: TokenMetadata
+  metadataCid: String
+  owner: String!
+  royaltyBps: Int!
+  royaltyReceiver: String!
+  tokenId: String!
+  tokenUri: String!
+  transfers(after: String, first: Int! = 20): TransferConnection!
+}
+
+type TokenConnection {
+  edges: [TokenEdge!]!
+  pageInfo: PageInfo!
+}
+
+type TokenEdge {
+  cursor: String!
+  node: Token!
+}
+
+type TokenMetadata {
+  attributes: [MetadataAttribute!]!
+  description: String
+  image: String!
+  name: String!
+}
+
+type Transfer {
+  blockNumber: String!
+  from: String!
+  id: ID!
+  occurredAt: DateTime!
+  to: String!
+  txHash: String!
+}
+
+type TransferConnection {
+  edges: [TransferEdge!]!
+  pageInfo: PageInfo!
+}
+
+type TransferEdge {
+  cursor: String!
+  node: Transfer!
+}
+
+type UploadTarget {
+  expiresAt: DateTime!
+  uploadUrl: String!
+}
+
+"""String-encoded uint256 wei amount"""
+scalar Wei

@@ -10,6 +10,7 @@ import { MetadataPinRetryProcessor } from "@app/modules/metadata/infrastructure/
 import { PinataMetadataPinningAdapter } from "@app/modules/metadata/infrastructure/pinata-metadata-pinning.adapter";
 import { PinataPinStatusChecker } from "@app/modules/metadata/infrastructure/pinata-pin-status.checker";
 import { MetadataController } from "@app/modules/metadata/presentation/controllers/metadata.controller";
+import { MetadataResolver } from "@app/modules/metadata/presentation/resolvers/metadata.resolver";
 
 @Module({
   imports: [BullModule.registerQueue({ name: METADATA_PIN_QUEUE_NAME })],
@@ -17,6 +18,7 @@ import { MetadataController } from "@app/modules/metadata/presentation/controlle
   providers: [
     UploadMetadataUseCase,
     MetadataPinRetryProcessor,
+    MetadataResolver,
     { provide: METADATA_PINNING_SERVICE, useClass: PinataMetadataPinningAdapter },
     { provide: METADATA_PIN_RETRY_QUEUE, useClass: BullMqMetadataPinRetryQueue },
     { provide: PIN_STATUS_CHECKER, useClass: PinataPinStatusChecker },
