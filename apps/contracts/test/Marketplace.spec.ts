@@ -167,15 +167,15 @@ describe("Marketplace", () => {
       const { marketplace, nft, buyer, seller, royaltyReceiver, feeRecipient, listingId, tokenId } =
         await loadFixture(listFixture);
 
-      await expect(marketplace.connect(buyer).buy(listingId, { value: PRICE }))
-        .to.emit(marketplace, "Sold")
-        .withArgs(listingId, buyer.address, PRICE);
-
-      expect(await nft.ownerOf(tokenId)).to.equal(buyer.address);
-
       const feeAmount = (PRICE * FEE_BPS) / 10_000n;
       const royaltyAmount = (PRICE * ROYALTY_BPS) / 10_000n;
       const sellerAmount = PRICE - feeAmount - royaltyAmount;
+
+      await expect(marketplace.connect(buyer).buy(listingId, { value: PRICE }))
+        .to.emit(marketplace, "Sold")
+        .withArgs(listingId, buyer.address, PRICE, feeAmount, royaltyAmount, royaltyReceiver.address);
+
+      expect(await nft.ownerOf(tokenId)).to.equal(buyer.address);
 
       expect(await marketplace.pendingWithdrawals(seller.address)).to.equal(sellerAmount);
       expect(await marketplace.pendingWithdrawals(royaltyReceiver.address)).to.equal(royaltyAmount);

@@ -8,15 +8,18 @@
     "dev": "tsx watch src/index.ts",
     "lint": "eslint \"src/**/*.ts\"",
     "typecheck": "tsc --noEmit",
-    "test": "jest --passWithNoTests"
+    "test": "jest --passWithNoTests --runInBand",
+    "rebuild-from-chain": "tsx src/scripts/rebuild-from-chain.ts"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
+    "@we3/contracts-abi": "workspace:*",
     "dotenv": "^16.4.7",
     "ioredis": "^5.4.1",
-    "viem": "^2.21.54"
+    "viem": "2.23.2"
   },
   "devDependencies": {
+    "@we3/contracts": "workspace:*",
     "@types/jest": "^29.5.14",
     "@types/node": "^22.10.1",
     "@typescript-eslint/eslint-plugin": "^8.15.0",

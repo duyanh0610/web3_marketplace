@@ -43,7 +43,18 @@ contract Marketplace is OwnableUpgradeable, PausableUpgradeable, ReentrancyGuard
         uint256 price
     );
     event Cancelled(uint256 indexed listingId);
-    event Sold(uint256 indexed listingId, address indexed buyer, uint256 price);
+    // feeAmount/royaltyAmount/royaltyReceiver are emitted directly (rather
+    // than left for an off-chain indexer to recompute from the current
+    // feeBps) so the event log is a complete, self-contained record — see
+    // docs/08-blockchain-indexer.md §6 and apps/indexer's Sold handler.
+    event Sold(
+        uint256 indexed listingId,
+        address indexed buyer,
+        uint256 price,
+        uint256 feeAmount,
+        uint256 royaltyAmount,
+        address royaltyReceiver
+    );
     event Withdrawn(address indexed account, uint256 amount);
     event FeeUpdated(uint96 feeBps);
     event FeeRecipientUpdated(address indexed feeRecipient);
@@ -159,7 +170,7 @@ contract Marketplace is OwnableUpgradeable, PausableUpgradeable, ReentrancyGuard
             pendingWithdrawals[feeRecipient] += feeAmount;
         }
 
-        emit Sold(listingId, msg.sender, price);
+        emit Sold(listingId, msg.sender, price, feeAmount, royaltyAmount, royaltyReceiver);
     }
 
     /// @notice Claims the caller's accumulated pending balance (from sales,

@@ -7,8 +7,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// See docs/07-database-design.md §3 for the full ER diagram (only ACCOUNT
-// and SIWE_SESSION exist so far — the rest land in later milestones).
+// See docs/07-database-design.md §3 for the full ER diagram. AUCTION/BID are
+// deliberately not modeled yet — no Auction contract exists until Milestone 8,
+// so there are no events to project into them.
+//
+// Written only by apps/indexer (see docs/08-blockchain-indexer.md §2 —
+// "single writer principle") — the backend only ever reads these tables.
+//
+// `blockNumber` on Listing/Sale isn't in the docs/07 ERD (which is
+// intentionally high-level) but is required for reorg rewind: on a detected
+// reorg at block N, the indexer needs to find every row touched by an
+// orphaned block without a separate event-log table — see
+// docs/08-blockchain-indexer.md §4.
 
 model Account {
   id          String   @id @default(uuid())
@@ -32,4 +42,123 @@ model SiweSession {
 
   @@index([nonce])
   @@map("siwe_sessions")
+}
+
+model Collection {
+  id                    String @id @default(uuid())
+  contractAddress       String @unique
+  name                  String
+  symbol                String
+  implementationVersion Int    @default(1)
+
+  tokens Token[]
+
+  @@map("collections")
+}
+
+model Token {
+  id              String   @id @default(uuid())
+  collectionId    String
+  collection      Collection @relation(fields: [collectionId], references: [id])
+  tokenId         BigInt
+  ownerAddress    String
+  tokenUri        String
+  metadataCid     String?
+  royaltyReceiver String?
+  royaltyBps      Int?
+  mintedAt        DateTime @default(now())
+
+  listings  Listing[]
+  transfers Transfer[]
+
+  @@unique([collectionId, tokenId])
+  @@index([ownerAddress])
+  @@map("tokens")
+}
+
+enum ListingStatus {
+  ACTIVE
+  CANCELLED
+  SOLD
+}
+
+model Listing {
+  id                 String        @id @default(uuid())
+  onchainListingId   BigInt        @unique
+  tokenId            String
+  token              Token         @relation(fields: [tokenId], references: [id])
+  sellerAddress      String
+  priceWei           Decimal
+  status             ListingStatus @default(ACTIVE)
+  // Block of the Listed event that created this row — kept separate from
+  // lastEventBlock (which Cancelled/Sold overwrite) so reorg rewind can tell
+  // "listing existed before the reorg, just revert its status" apart from
+  // "listing was itself created after the reorg point, delete it".
+  listedAtBlock      BigInt
+  // Block of the most recent event applied to this listing (Listed, then
+  // Cancelled/Sold) — see reorg-rewind note above.
+  lastEventBlock     BigInt
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  sale Sale?
+
+  @@index([status, createdAt(sort: Desc)])
+  @@index([sellerAddress, status])
+  @@map("listings")
+}
+
+model Sale {
+  id             String   @id @default(uuid())
+  listingId      String   @unique
+  listing        Listing  @relation(fields: [listingId], references: [id])
+  buyerAddress   String
+  priceWei       Decimal
+  royaltyPaidWei Decimal
+  feePaidWei     Decimal
+  txHash         String
+  blockNumber    BigInt
+  settledAt      DateTime @default(now())
+
+  @@map("sales")
+}
+
+model Transfer {
+  id          String   @id @default(uuid())
+  tokenId     String
+  token       Token    @relation(fields: [tokenId], references: [id])
+  fromAddress String
+  toAddress   String
+  txHash      String
+  logIndex    Int
+  blockNumber BigInt
+  occurredAt  DateTime @default(now())
+
+  @@unique([txHash, logIndex])
+  @@index([tokenId, occurredAt])
+  @@map("transfers")
+}
+
+model IndexerCursor {
+  source               String @id
+  lastIndexedBlock     BigInt
+  lastIndexedBlockHash String
+
+  @@map("indexer_cursors")
+}
+
+// Rolling window of recent per-block hashes, kept only for the last
+// INDEXER_REORG_CHECK_DEPTH blocks behind the cursor (see
+// docs/08-blockchain-indexer.md §4). IndexerCursor alone only remembers the
+// hash of the single most-recently-indexed block, which isn't enough to walk
+// backward and find a reorg's common ancestor — this table is what's
+// actually compared against the live chain, block by block, until a match is
+// found. Pruned as the cursor advances so it never grows past the window.
+model IndexerBlockHash {
+  source      String
+  blockNumber BigInt
+  blockHash   String
+
+  @@id([source, blockNumber])
+  @@map("indexer_block_hashes")
 }
